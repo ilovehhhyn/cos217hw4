@@ -1,0 +1,7 @@
+2 path.c:128 0x4212a9 24
+4 path.c:254 0x4212a9 24
+2 path.c:128 0x4234c9 24
+1 dynarray.c:84 0x4212a9 24
+2 dynarray.c:95 0x4234f9 16
+2 path.c:90 0x423529 6
+1 path.c:143 0x423549 6
