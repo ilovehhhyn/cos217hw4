@@ -52,7 +52,7 @@ static int FT_traversePath(Path_T oPPath, Node_T *poNFurthest) {
    Node_T oNChild = NULL;
    size_t ulDepth;
    size_t i;
-   size_t ulChildID;
+   size_t ulChildID = 0;
 
    assert(oPPath != NULL);
    assert(poNFurthest != NULL);

@@ -25,7 +25,8 @@ struct node {
    size_t ulLength;
 };
 
-
+/* local compare helper function; see details below */
+static int Node_compare(Node_T oNFirst, Node_T oNSecond);
 /*
   Links new child oNChild into oNParent's children array at index
   ulIndex. Returns SUCCESS if the new child was added successfully,
@@ -63,7 +64,7 @@ int Node_new(Path_T oPPath, Node_T oNParent, Node_T *poNResult,
    Path_T oPParentPath = NULL;
    Path_T oPNewPath = NULL;
    size_t ulParentDepth;
-   size_t ulIndex;
+   size_t ulIndex = 0;
    int iStatus;
 
    assert(oPPath != NULL);
@@ -194,7 +195,7 @@ int Node_new(Path_T oPPath, Node_T oNParent, Node_T *poNResult,
 }
 
 size_t Node_free(Node_T oNNode) {
-   size_t ulIndex;
+   size_t ulIndex = 0;
    size_t ulCount = 0;
 
    assert(oNNode != NULL);
@@ -290,7 +291,13 @@ Node_T Node_getParent(Node_T oNNode) {
    return oNNode->oNParent;
 }
 
-int Node_compare(Node_T oNFirst, Node_T oNSecond) {
+/*
+  Compares oNFirst and oNSecond lexicographically based on their paths.
+  Returns <0, 0, or >0 if oNFirst is less than, equal to, or greater
+  than oNSecond, respectively.
+*/
+
+static int Node_compare(Node_T oNFirst, Node_T oNSecond) {
    assert(oNFirst != NULL);
    assert(oNSecond != NULL);
 
