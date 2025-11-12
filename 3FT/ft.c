@@ -268,11 +268,13 @@ int FT_insertFile(const char *pcPath, void *pvContents,
    if(!bIsInitialized)
       return INITIALIZATION_ERROR;
 
+   /*create path object oPPath */
    iStatus = Path_new(pcPath, &oPPath);
    if(iStatus != SUCCESS)
       return iStatus;
 
-   /* find the closest ancestor of oPPath already in the tree */
+   /* find the closest ancestor of oPPath already in the tree 
+    * and store into oNCurr */
    iStatus = FT_traversePath(oPPath, &oNCurr);
    if(iStatus != SUCCESS)
    {
@@ -280,6 +282,7 @@ int FT_insertFile(const char *pcPath, void *pvContents,
       return iStatus;
    }
 
+   /* find depth of path */
    ulDepth = Path_getDepth(oPPath);
 
    /* files cannot be root */
@@ -295,7 +298,7 @@ int FT_insertFile(const char *pcPath, void *pvContents,
       return CONFLICTING_PATH;
    }
 
-   /* if there's no tree yet, we can't insert a file as root */
+   /* if there's no tree yet, can't insert a file as root */
    if(oNCurr == NULL) {
       Path_free(oPPath);
       return CONFLICTING_PATH;
@@ -314,7 +317,7 @@ int FT_insertFile(const char *pcPath, void *pvContents,
    while(ulIndex < ulDepth) {
       Path_T oPPrefix = NULL;
 
-      /* generate a Path_T for this level */
+      /* generate a Path_T object for this level */
       iStatus = Path_prefix(oPPath, ulIndex, &oPPrefix);
       if(iStatus != SUCCESS) {
          Path_free(oPPath);

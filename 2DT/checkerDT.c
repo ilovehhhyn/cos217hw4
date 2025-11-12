@@ -41,7 +41,7 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
 }
 
 /*
-   Helper function to count the actual number of nodes in the tree.
+   static helper function to recursively count the actual number of nodes in the tree.
 */
 static size_t CheckerDT_countNodes(Node_T oNNode) {
    size_t count = 0;
@@ -50,9 +50,8 @@ static size_t CheckerDT_countNodes(Node_T oNNode) {
    if(oNNode == NULL)
       return 0;
    
-   count = 1; /* Count this node */
+   count = 1; /* initialized this node */
    
-   /* Count all descendants */
    for(ulIndex = 0; ulIndex < Node_getNumChildren(oNNode); ulIndex++) {
       Node_T oNChild = NULL;
       int iStatus = Node_getChild(oNNode, ulIndex, &oNChild);
@@ -65,8 +64,7 @@ static size_t CheckerDT_countNodes(Node_T oNNode) {
 }
 
 /*
-   Helper function to check for duplicate paths in the tree.
-   Uses a DynArray to track all paths seen so far.
+   helper function to check for duplicate paths in the tree
 */
 static boolean CheckerDT_noDuplicatePaths(Node_T oNNode, DynArray_T oPaths) {
    size_t ulIndex;
@@ -75,37 +73,37 @@ static boolean CheckerDT_noDuplicatePaths(Node_T oNNode, DynArray_T oPaths) {
    
    if(oNNode == NULL)
       return TRUE;
-   
+
+   /* get this path */
    oPCurrentPath = Node_getPath(oNNode);
    
-   /* Check if current path is NULL */
+   /* check if this current path is NULL */
    if(oPCurrentPath == NULL) {
       fprintf(stderr, "Node has NULL path\n");
       return FALSE;
    }
    
-   /* Check if this path already exists in our array */
+   /* check if this path already exists in our array */
    for(i = 0; i < DynArray_getLength(oPaths); i++) {
       Path_T oPExistingPath = (Path_T)DynArray_get(oPaths, i);
-      
-      /* Skip NULL entries */
-      if(oPExistingPath == NULL)
-         continue;
+    
+      /* skip NULL entries */
+      if(oPExistingPath == NULL) continue;
          
       if(Path_comparePath(oPCurrentPath, oPExistingPath) == 0) {
-         fprintf(stderr, "Duplicate path found: %s\n", 
+         fprintf(stderr, "found duplicate path: %s\n", 
                  Path_getPathname(oPCurrentPath));
          return FALSE;
       }
    }
    
-   /* Add current path to array */
+   /* add current path to array */
    if(DynArray_add(oPaths, oPCurrentPath) == 0) {
       fprintf(stderr, "Failed to add path to checking array\n");
       return FALSE;
    }
    
-   /* Check all children recursively */
+   /* check children recursively */
    for(ulIndex = 0; ulIndex < Node_getNumChildren(oNNode); ulIndex++) {
       Node_T oNChild = NULL;
       int iStatus = Node_getChild(oNNode, ulIndex, &oNChild);
@@ -143,24 +141,22 @@ static boolean CheckerDT_treeCheck(Node_T oNNode) {
             return FALSE;
          }
 
-         /* CHECK: Children must be in lexicographic order */
+         /* check: children must follow lexicographic order */
          if(ulIndex > 0) {
             Node_T oNPrevChild = NULL;
-            int iPrevStatus = Node_getChild(oNNode, ulIndex - 1, &oNPrevChild);
+            int iPrevStatus = Node_getChild(oNNode, ulIndex-1, &oNPrevChild);
             
             if(iPrevStatus != SUCCESS) {
-               fprintf(stderr, "Cannot get previous child for ordering check\n");
+               fprintf(stderr, "could not get previous child in ordering check\n");
                return FALSE;
             }
             
             if(Path_comparePath(Node_getPath(oNPrevChild), 
                                Node_getPath(oNChild)) >= 0) {
-               fprintf(stderr, "Children are not in lexicographic order at node %s\n",
+               fprintf(stderr, "child of node %s are not in lexicographic order\n",
                        Path_getPathname(Node_getPath(oNNode)));
-               fprintf(stderr, "  Child %lu: %s\n", (unsigned long)(ulIndex-1),
-                       Path_getPathname(Node_getPath(oNPrevChild)));
-               fprintf(stderr, "  Child %lu: %s\n", (unsigned long)ulIndex,
-                       Path_getPathname(Node_getPath(oNChild)));
+               fprintf(stderr, "wrong order of child at index %lu and %lu\n", (unsigned long)(ulIndex-1),
+               (unsigned long)ulIndex);
                return FALSE;
             }
          }
@@ -178,7 +174,7 @@ static boolean CheckerDT_treeCheck(Node_T oNNode) {
 boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
                           size_t ulCount) {
    DynArray_T oPaths;
-   boolean bResult;
+   boolean result;
    
    /* Sample check on a top-level data structure invariant:
       if the DT is not initialized, its count should be 0. */
@@ -189,29 +185,33 @@ boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
       }
    }
    
-   /* NEW CHECK: Count must match actual number of nodes in tree */
+   /* check: object count must match actual number of nodes in tree */
    if(bIsInitialized) {
       size_t ulActualCount = CheckerDT_countNodes(oNRoot);
       if(ulActualCount != ulCount) {
-         fprintf(stderr, "Count is %lu but actual nodes is %lu\n", 
+         fprintf(stderr, "Count is %lu while we have %lu actual nodes \n", 
                  (unsigned long)ulCount, (unsigned long)ulActualCount);
          return FALSE;
       }
    }
    
-   /* CHECK: No duplicate paths in the tree */
+   /* check: no duplicate paths in the tree */
    if(oNRoot != NULL) {
-      size_t arraySize = (ulCount > 0) ? ulCount : 1;
+      size_t arraySize;
+      if (ulCount > 0) {
+       arraySize = ulCount;
+      } else 
+	arraySize = 1;
       oPaths = DynArray_new(arraySize);
       if(oPaths == NULL) {
-         fprintf(stderr, "Unable to create array for duplicate path checking\n");
+         fprintf(stderr, "could not create array for duplicate path checking\n");
          return FALSE;
       }
       
-      bResult = CheckerDT_noDuplicatePaths(oNRoot, oPaths);
+      result = CheckerDT_noDuplicatePaths(oNRoot, oPaths);
       DynArray_free(oPaths);
       
-      if(!bResult)
+      if(!result)
          return FALSE;
    }
    
