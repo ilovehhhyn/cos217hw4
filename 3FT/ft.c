@@ -553,43 +553,55 @@ int FT_destroy(void) {
   string representation of the FT.
 */
 
+
 /*
-  Performs a pre-order traversal of the tree rooted at n,
-  inserting each payload to DynArray_T d beginning at index i.
-  Returns the next unused index in d after the insertion(s).
+  Performs a pre-order traversal of the tree rooted at oNNode,
+  inserting each node into DynArray_T oDNodes beginning at index ulIndex.
+  Returns the next unused index in oDNodes after the insertion(s).
   
-  Files are visited before directories (within the same parent).
+  Visits Current node, all file children (recursively, in lexicographic order), 
+  and all directory children (recursively, in lexicographic order).
+
+  Updated variable name to be descriptive.
 */
-static size_t FT_preOrderTraversal(Node_T n, DynArray_T d, size_t i) {
-   size_t c;
+static size_t FT_preOrderTraversal(Node_T oNNode, DynArray_T oDNodes, 
+                                    size_t ulIndex) {
+   size_t ulChildIdx;
 
-   assert(d != NULL);
+   assert(oDNodes != NULL);
 
-   if(n != NULL) {
-      (void) DynArray_set(d, i, n);
-      i++;
+   if(oNNode != NULL) {
+      /* add current node to array */
+      (void) DynArray_set(oDNodes, ulIndex, oNNode);
+      ulIndex++;
       
-      /* First pass: visit file children */
-      for(c = 0; c < Node_getNumChildren(n); c++) {
+      /* 1st pass: visit all file children */
+      for(ulChildIdx = 0; ulChildIdx < Node_getNumChildren(oNNode); 
+          ulChildIdx++) {
          int iStatus;
          Node_T oNChild = NULL;
-         iStatus = Node_getChild(n, c, &oNChild);
+         
+         iStatus = Node_getChild(oNNode, ulChildIdx, &oNChild);
          assert(iStatus == SUCCESS);
+         
          if(Node_isFile(oNChild))
-            i = FT_preOrderTraversal(oNChild, d, i);
+            ulIndex = FT_preOrderTraversal(oNChild, oDNodes, ulIndex);
       }
       
-      /* Second pass: visit directory children */
-      for(c = 0; c < Node_getNumChildren(n); c++) {
+      /* 2nd pass: visit all directory children */
+      for(ulChildIdx = 0; ulChildIdx < Node_getNumChildren(oNNode); 
+          ulChildIdx++) {
          int iStatus;
          Node_T oNChild = NULL;
-         iStatus = Node_getChild(n, c, &oNChild);
+         
+         iStatus = Node_getChild(oNNode, ulChildIdx, &oNChild);
          assert(iStatus == SUCCESS);
+         
          if(!Node_isFile(oNChild))
-            i = FT_preOrderTraversal(oNChild, d, i);
+            ulIndex = FT_preOrderTraversal(oNChild, oDNodes, ulIndex);
       }
    }
-   return i;
+   return ulIndex;
 }
 
 /*

@@ -78,34 +78,30 @@ int Node_compare(Node_T oNFirst, Node_T oNSecond);
 */
 char *Node_toString(Node_T oNNode);
 
+
+/*-------------------------------------------------------*/
+/* The following functions are specific to the implementation
+ * of ft where oNNode could be a file or a directory      */
+/*--------------------------------------------------------*/
 /* Returns TRUE if oNNode is a file, FALSE if it is a directory. */
 boolean Node_isFile(Node_T oNNode);
 
 /*
-  Returns a pointer to the contents of oNNode. If oNNode is a directory,
-  returns NULL.
+  Returns a pointer to the contents of oNNode, Returns NULL if 
+  oNNode is a directory,
 */
 void *Node_getContents(Node_T oNNode);
 
 /*
-  Returns the length in bytes of oNNode's contents. If oNNode is a
-  directory, returns 0.
+  Returns the length in bytes of oNNode's contents (0 if oNNode is a
+  directory).
 */
 size_t Node_getLength(Node_T oNNode);
 
-/*
-  Replaces the contents of file node oNNode with pvNewContents of
-  length ulNewLength. Returns SUCCESS if successful, or:
-  * NOT_A_FILE if oNNode is a directory
-  * MEMORY_ERROR if memory allocation fails
-  Frees the old contents before setting new contents.
-*/
-int Node_setContents(Node_T oNNode, void *pvNewContents,
-                     size_t ulNewLength);
 
 /*
-  Replaces the contents pointer of file node oNNode with pvNewContents
-  of length ulNewLength WITHOUT freeing the old contents.
+  Replaces the contents pointer of file oNNode with pointer pvNewContents
+  of length ulNewLength (does not free the old contents; used for replacement).
   Returns SUCCESS if successful, or:
   * NOT_A_FILE if oNNode is a directory
   Caller is responsible for managing the old contents memory.

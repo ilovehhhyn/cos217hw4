@@ -332,38 +332,6 @@ size_t Node_getLength(Node_T oNNode) {
    return oNNode->ulLength;
 }
 
-int Node_setContents(Node_T oNNode, void *pvNewContents,
-                     size_t ulNewLength) {
-   void *pvNewCopy;
-   
-   assert(oNNode != NULL);
-   
-   /* can only set contents of files */
-   if(!oNNode->bIsFile)
-      return NOT_A_FILE;
-   
-   /* allocate and copy new contents */
-   if(pvNewContents != NULL && ulNewLength > 0) {
-      pvNewCopy = malloc(ulNewLength);
-      if(pvNewCopy == NULL)
-         return MEMORY_ERROR;
-      memcpy(pvNewCopy, pvNewContents, ulNewLength);
-   }
-   else {
-      pvNewCopy = NULL;
-      ulNewLength = 0;
-   }
-   
-   /* free old contents */
-   if(oNNode->pvContents != NULL)
-      free(oNNode->pvContents);
-   
-   /* set new contents */
-   oNNode->pvContents = pvNewCopy;
-   oNNode->ulLength = ulNewLength;
-   
-   return SUCCESS;
-}
 
 int Node_replaceContents(Node_T oNNode, void *pvNewContents,
                          size_t ulNewLength) {
