@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------*/
 /* nodeFT.c                                                           */
-/* Author: [Your Name]                                                */
+/* Author: Helen Hui, George Xie                                                */
 /*--------------------------------------------------------------------*/
 
 #include <stdlib.h>
@@ -25,7 +25,11 @@ struct node {
    size_t ulLength;
 };
 
-/* local compare helper function; see details below */
+/*
+  Compares oNFirst and oNSecond lexicographically based on their paths.
+  Returns <0, 0, or >0 if oNFirst is less than, equal to, or greater
+  than oNSecond, respectively.
+*/
 static int Node_compare(Node_T oNFirst, Node_T oNSecond);
 /*
   Links new child oNChild into oNParent's children array at index
