@@ -41,7 +41,8 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
 }
 
 /*
-   static helper function to recursively count the actual number of nodes in the tree.
+   Recursively counts the actual number of nodes in the tree rooted at oNNode.
+   Returns the total count of nodes in the subtree.
 */
 static size_t CheckerDT_countNodes(Node_T oNNode) {
    size_t count = 0;
@@ -64,7 +65,9 @@ static size_t CheckerDT_countNodes(Node_T oNNode) {
 }
 
 /*
-   helper function to check for duplicate paths in the tree
+   Checks for duplicate paths in the tree rooted at oNNode.
+   Uses oPaths to track all paths encountered during traversal.
+   Returns TRUE if no duplicate paths are found, FALSE otherwise.
 */
 static boolean CheckerDT_noDuplicatePaths(Node_T oNNode, DynArray_T oPaths) {
    size_t ulIndex;
